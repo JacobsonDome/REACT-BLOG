@@ -1,0 +1,29 @@
+name: REACT-BLOG
+on:
+  push:
+    branches:
+      - main
+      - feature-branch
+      
+jobs:
+  dev:
+    if: github.ref == 'refs/heads/feature-branch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: dev
+        run: |
+          echo "${{secrets.MITARBEITERJACOBPORTALDEV }}" | docker login -u "santosch" --password-stdin
+          docker image build -t santosch/mitarbeiterjacobportaldev:v${{ github.run_number }} .
+          docker push santosch/mitarbeiterjacobportaldev:v${{ github.run_number }}
+          
+  prod:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: prod
+        run: |
+         echo "${{secrets.REACTBLOGPROD }}" | docker login -u "santosch" --password-stdin
+         docker image build -t santosch/reactblogprd:v${{ github.run_number }} .
+         docker push santosch/reactblogprd:v${{ github.run_number }}
